@@ -1,43 +1,30 @@
 package com.tianyalei.elasticsearch.controller;
 
 
-import com.tianyalei.elasticsearch.model.Person;
-import com.tianyalei.elasticsearch.service.PersonService;
-import org.elasticsearch.common.unit.DistanceUnit;
-import org.elasticsearch.index.query.GeoDistanceQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
-import org.elasticsearch.search.sort.SortBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SearchQuery;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
- 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.tianyalei.elasticsearch.model.Person;
+import com.tianyalei.elasticsearch.service.PersonService;
  
 @RestController
 public class PersonController {
     @Autowired
     PersonService personService;
-    @Autowired
-    ElasticsearchTemplate elasticsearchTemplate;
  
     @GetMapping("/add")
     public Object add() {
         double lat = 39.929986;
         double lon = 116.395645;
- 
+        long st = System.currentTimeMillis();
         List<Person> personList = new ArrayList<>(900000);
         for (int i = 100000; i < 1000000; i++) {
             double max = 0.00001;
@@ -60,6 +47,9 @@ public class PersonController {
             personList.add(person);
         }
         personService.bulkIndex(personList);
+        
+        //用下面的算法，操作方便，可很慢
+//        personService.addMore(personList);
  
 //        SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(QueryBuilders.queryStringQuery("spring boot OR 书籍")).build();
 //        List<Article> articles = elas、ticsearchTemplate.queryForList(se、archQuery, Article.class);
@@ -67,7 +57,8 @@ public class PersonController {
 //            System.out.println(article.toString());
 //        }
  
-        return "添加数据";
+        long et = System.currentTimeMillis();
+        return "添加数据，所用时间=" + (et - st);
     }
  
     /**
@@ -80,30 +71,49 @@ public class PersonController {
      */
     @GetMapping("/query")
     public Map<String, Object> query() {
-        double lat = 39.929986;
-        double lon = 116.395645;
+//        double lat = 39.929986;
+//        double lon = 116.395645;
+        double lat = 39.9299;
+        double lon = 116.3956;
+        int range = 15;
  
         Long nowTime = System.currentTimeMillis();
-        //查询某经纬度100米范围内
-        GeoDistanceQueryBuilder builder = QueryBuilders.geoDistanceQuery("address").point(lat, lon)
-                .distance(5, DistanceUnit.METERS);
- 
-//        GeoDistanceSortBuilder sortBuilder = SortBuilders.fieldSort("address");
-        GeoDistanceSortBuilder  sortBuilder = SortBuilders.geoDistanceSort("address", lat, lon).unit(DistanceUnit.METERS)
-                .order(SortOrder.ASC);
- 
-        Pageable pageable = new PageRequest(0, 50);
- 
-        NativeSearchQueryBuilder builder1 = new NativeSearchQueryBuilder().withFilter(builder).withSort(sortBuilder).withPageable(pageable);
-        SearchQuery searchQuery = builder1.build();
- 
-        //queryForList默认是分页，走的是queryForPage，默认10个
-        List<Person> personList = elasticsearchTemplate.queryForList(searchQuery, Person.class);
+        List<Person> personList = personService.personList(lat, lon, range);
         String hs = "耗时：" + (System.currentTimeMillis() - nowTime);
         System.out.println(hs);
         Map<String, Object> map = new HashMap<>();
         map.put("hs", hs);
         map.put("data", personList);
         return map;
+    }
+    
+    @GetMapping("/update")
+    public Map<String, Object> update() {
+    	 Map<String, Object> map = new HashMap<>();
+         map.put("hs", "aaa");
+         
+         double lat = 39.92998;
+         double lon = 116.39568;
+         DecimalFormat df = new DecimalFormat("######0.000000");
+         // System.out.println(s);
+         String lons = df.format(lon);
+         String lats = df.format(lat);
+         Double dlon = Double.valueOf(lons);
+         Double dlat = Double.valueOf(lats);
+         
+         Person person = new Person();
+         person.setId(255849);
+         person.setAddress(dlat + "," + dlon);
+         person.setName("名字138848");
+         person.setPhone("电话138848");
+         
+//         personService.addOrUpdate(person);
+         personService.personUpdate(person);
+         
+//         List<Person> pList = new ArrayList<>();
+//         pList.add(person);
+//         personService.insertOrUpdateTaskInfo(pList);
+         
+         return map;
     }
 }
