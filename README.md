@@ -7,6 +7,8 @@ https://blog.csdn.net/u014201191/article/details/46508311
 http://localhost:9031/add
 http://localhost:9031/query
 http://localhost:9031/update
+http://localhost:9031/demo/demo3.html
+百度地址的打点功能
 
 使用虚拟机为elt的es配置
 启动需要登录操作系统，切换用户，启动Es即可
