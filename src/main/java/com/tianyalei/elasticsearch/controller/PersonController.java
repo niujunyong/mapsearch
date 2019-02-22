@@ -22,19 +22,20 @@ public class PersonController {
  
     @GetMapping("/add")
     public Object add() {
-        double lat = 39.929986;
-        double lon = 116.395645;
+        double lat = 36.331654;
+        double lon = 113.299258;
         long st = System.currentTimeMillis();
         List<Person> personList = new ArrayList<>(900000);
-        for (int i = 100000; i < 1000000; i++) {
-            double max = 0.00001;
+        for (int i = 1000000; i < 1200000; i++) {
+            double max = 0.001;
             double min = 0.000001;
             Random random = new Random();
-            double s = random.nextDouble() % (max - min + 1) + max;
+            double s1 = random.nextDouble() % (max - min + 1) + max;
+            double s2 = random.nextDouble() % (max - min + 1) + max;
             DecimalFormat df = new DecimalFormat("######0.000000");
             // System.out.println(s);
-            String lons = df.format(s + lon);
-            String lats = df.format(s + lat);
+            String lons = df.format(s1 + lon);
+            String lats = df.format(s2 + lat);
             Double dlon = Double.valueOf(lons);
             Double dlat = Double.valueOf(lats);
  
@@ -73,9 +74,9 @@ public class PersonController {
     public Map<String, Object> query() {
 //        double lat = 39.929986;
 //        double lon = 116.395645;
-        double lat = 39.9299;
-        double lon = 116.3956;
-        int range = 15;
+        double lat = 36.331654;
+        double lon = 113.299258;
+        int range = 1500;
  
         Long nowTime = System.currentTimeMillis();
         List<Person> personList = personService.personList(lat, lon, range);
@@ -96,10 +97,10 @@ public class PersonController {
          double lon = 116.39561;
          DecimalFormat df = new DecimalFormat("######0.000000");
          // System.out.println(s);
-         String lons = df.format(lon);
          String lats = df.format(lat);
-         Double dlon = Double.valueOf(lons);
+         String lons = df.format(lon);
          Double dlat = Double.valueOf(lats);
+         Double dlon = Double.valueOf(lons);
          
          Person person = new Person();
          person.setId(255849);
