@@ -92,8 +92,8 @@ public class PersonController {
     	 Map<String, Object> map = new HashMap<>();
          map.put("hs", "aaa");
          
-         double lat = 39.92998;
-         double lon = 116.39568;
+         double lat = 39.92991;
+         double lon = 116.39561;
          DecimalFormat df = new DecimalFormat("######0.000000");
          // System.out.println(s);
          String lons = df.format(lon);
