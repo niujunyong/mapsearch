@@ -72,16 +72,36 @@ public class PersonController {
      */
     @GetMapping("/query")
     public Map<String, Object> query() {
-//        double lat = 39.929986;
-//        double lon = 116.395645;
-        double lat = 36.331654;
-        double lon = 113.299258;
-        int range = 1500;
+        double lat = 36.346014;
+        double lon = 113.307417;
+    	//36.337509,113.305632
+//        double lat = 36.331654;
+//        double lon = 113.299258;
+        int range = 1000;
  
         Long nowTime = System.currentTimeMillis();
         List<Person> personList = personService.personList(lat, lon, range);
         String hs = "耗时：" + (System.currentTimeMillis() - nowTime);
-        System.out.println(hs);
+        System.out.println(hs + "; 数据=" + personList.size());
+        Map<String, Object> map = new HashMap<>();
+        map.put("hs", hs);
+        map.put("data", personList);
+        return map;
+    }
+    
+    @GetMapping("/queryByXy")
+    public Map<String, Object> query(double lat, double lng) {
+//        double lat = 36.346014;
+//        double lon = 113.307417;
+    	//36.337509,113.305632
+//        double lat = 36.331654;
+//        double lon = 113.299258;
+        int range = 1000;
+ 
+        Long nowTime = System.currentTimeMillis();
+        List<Person> personList = personService.personList(lat, lng, range);
+        String hs = "耗时：" + (System.currentTimeMillis() - nowTime);
+        System.out.println(hs + "; 数据=" + personList.size());
         Map<String, Object> map = new HashMap<>();
         map.put("hs", hs);
         map.put("data", personList);
